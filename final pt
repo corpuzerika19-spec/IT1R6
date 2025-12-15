@@ -1,0 +1,163 @@
+#include <stdio.h>
+#include <string.h>
+
+
+char userName[50];
+char fullName[50];
+char phoneNum[20];
+char homeAddress[100];
+float totalPrice = 0.0;
+
+
+void loginPage();
+void customerInfo();
+void showMenu();
+void takeOrder();
+void saveRecord();
+void viewRecords();
+
+int main() {
+    int option;
+
+    printf("=============================================\n");
+    printf("            DAILY DOUGHS                   \n");
+    printf("      Freshly Baked Cookies Everyday        \n");
+    printf("=============================================\n");
+
+    loginPage();
+    customerInfo();
+    showMenu();
+    takeOrder();
+    saveRecord();
+
+    printf("\nWould you like to view all previous orders?\n");
+    printf("[1] Yes  [2] No : ");
+    scanf("%d", &option);
+
+    if (option == 1) {
+        viewRecords();
+    }
+
+    printf("\n=============================================\n");
+    printf(" Thank you for ordering at Daily Doughs, %s!\n", fullName);
+    printf(" Your cookies are being prepared fresh \n");
+    printf("=============================================\n");
+
+    return 0;
+}
+
+
+void loginPage() {
+    printf("\nLOGIN\n");
+    printf("---------------------------------------------\n");
+    printf("Enter username: ");
+    fgets(userName, sizeof(userName), stdin);
+    userName[strcspn(userName, "\n")] = '\0';
+
+    if (strlen(userName) == 0) {
+        strcpy(userName, "Guest");
+    }
+
+    printf("\nWelcome, %s!\n\n", userName);
+}
+
+
+void customerInfo() {
+    printf("CUSTOMER INFORMATION\n");
+    printf("---------------------------------------------\n");
+
+    printf("Full Name: ");
+    fgets(fullName, sizeof(fullName), stdin);
+    fullName[strcspn(fullName, "\n")] = '\0';
+
+    printf("Phone Number: ");
+    fgets(phoneNum, sizeof(phoneNum), stdin);
+    phoneNum[strcspn(phoneNum, "\n")] = '\0';
+
+    printf("Complete Address: ");
+    fgets(homeAddress, sizeof(homeAddress), stdin);
+    homeAddress[strcspn(homeAddress, "\n")] = '\0';
+
+    printf("\nCustomer details saved successfully.\n\n");
+}
+
+
+void showMenu() {
+    printf("--------------- DAILY DOUGHS MENU ----------------\n");
+    printf("FLAVORS\n");
+    printf("1. Classic Cookie ............ P35.00\n");
+    printf("2. Red Velvet Cookie ......... P40.00\n");
+    printf("3. S'mores Cookie ............ P45.00\n");
+    printf("4. Box of 6 Cookies .......... P160.00\n");
+    printf("5. Checkout\n");
+    printf("--------------------------------------------------\n");
+}
+
+void takeOrder() {
+    int choice, qty;
+
+    while (1) {
+        printf("\nEnter your choice (1-5): ");
+        scanf("%d", &choice);
+
+        if (choice == 5) {
+            break;
+        }
+
+        printf("Enter quantity: ");
+        scanf("%d", &qty);
+
+        switch (choice) {
+            case 1:
+                totalPrice += 35 * qty;
+                break;
+            case 2:
+                totalPrice += 40 * qty;
+                break;
+            case 3:
+                totalPrice += 45 * qty;
+                break;
+            case 4:
+                totalPrice += 160 * qty;
+                break;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+
+    printf("\nTOTAL AMOUNT: P%.2f\n", totalPrice);
+}
+
+void saveRecord() {
+    FILE *fp = fopen("daily_doughs_records.txt", "a");
+
+    if (fp == NULL) {
+        printf("Error saving order.\n");
+        return;
+    }
+
+    fprintf(fp,
+        "Customer: %s | Phone: %s | Address: %s | Total: P%.2f\n",
+        fullName, phoneNum, homeAddress, totalPrice
+    );
+
+    fclose(fp);
+}
+
+void viewRecords() {
+    FILE *fp = fopen("daily_doughs_records.txt", "r");
+    char line[200];
+
+    if (fp == NULL) {
+        printf("No records available.\n");
+        return;
+    }
+
+    printf("\n=========== DAILY DOUGHS ORDER RECORDS ===========\n");
+    while (fgets(line, sizeof(line), fp)) {
+        printf("%s", line);
+    }
+    printf("=================================================\n");
+
+    fclose(fp);
+}
